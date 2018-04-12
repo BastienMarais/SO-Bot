@@ -18,15 +18,12 @@
 import discord
 import asyncio
 from discord.ext.commands import Bot
-import secrets # contient ID_BOT
 
-"""
-#########################################################################################
-#                            Initialisation                                   
-#########################################################################################
-"""
+# contient ID_BOT
+import secrets
 
-bot = Bot(command_prefix="!")
+# initialisation du bot
+bot = Bot(command_prefix="!") 
 
 """
 #########################################################################################
@@ -158,6 +155,6 @@ def check_staff(message):
 #                                       Main                                     
 #########################################################################################
 """ 
-    
+
 bot.run(secrets.ID_BOT)
 
