@@ -250,10 +250,10 @@ def pub_str():
     texte += "# Tchat :\n* " + URL_TCHAT + "\n"
     texte += "# Forum :\n* " + URL_FORUM + "\n"
     texte += "# Discord :\n* " + URL_DISCORD + "\n"
-    texte += "# Facebook :\n* " + URL_FACEBOOK + "\n"
+    texte += "# Facebook :\n* " + URL_FACEBOOK + "\n\n"
 
     if EVENT != "" :
-        texte += "# Event :\n" + EVENT + "\n\n"
+        texte += "# Event :\n* " + EVENT + "\n\n"
 
     texte += "# Voter pour Spaceorigin sur :\n"
     for url in URL_VOTE :
