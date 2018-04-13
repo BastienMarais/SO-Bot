@@ -16,6 +16,7 @@
 #########################################################################################
 """
 
+
 import discord
 import asyncio
 from discord.ext.commands import Bot
@@ -27,11 +28,13 @@ import secrets
 # initialisation du bot
 bot = Bot(command_prefix="!") 
 
+
 """
 #########################################################################################
 #                            Fonctions d'events                                      
 #########################################################################################
 """
+
 
 @bot.event
 async def on_ready():
@@ -53,6 +56,7 @@ async def on_ready():
     channel = discord.Object("434349278283038760")
     await bot.send_message(channel,texte)
         
+        
 @bot.event
 async def on_member_join(member):
     """ s'éxécute quand quelqu'un rejoint le serveur """
@@ -63,11 +67,13 @@ async def on_member_join(member):
     # envoi un message au nouveau membre
     await bot.send_message(member,texte)
     
+    
 """
 #########################################################################################
 #                            Différentes commandes                                     
 #########################################################################################
 """
+
 
 @bot.command(pass_context = True)
 async def say(ctx ,*, message : str) :
@@ -86,7 +92,6 @@ async def say(ctx ,*, message : str) :
     await log(ctx)
     await bot.say(msg)
 
-
     
 @bot.command(pass_context = True)
 async def me(ctx ,*args) : 
@@ -99,7 +104,6 @@ async def me(ctx ,*args) :
     await bot.say(me_str(ctx.message))
 
         
-
 @bot.command(pass_context = True)
 async def profil(ctx ,*, message : str):
     """ [JOUEURS] Affiche le profil SpaceOrigin des JOUEURS, séparer par ' '. """
@@ -109,6 +113,7 @@ async def profil(ctx ,*, message : str):
     
     # envoie le message sur le même channel    
     await bot.say(profil_str(message))
+
 
 @bot.command(pass_context = True)
 async def pub(ctx, *args):
@@ -144,14 +149,13 @@ async def mute(ctx ,*, message : str) :
     # envoie le message sur le même channel
     await bot.say(msg)
     
-    
-
 
 """
 #########################################################################################
 #                            Fonctions d'affichage                                   
 #########################################################################################
 """
+
 
 def mute_str(ctx):
     """ renvoie la string d'affichage de !mute """
@@ -192,6 +196,7 @@ def welcome_str():
     
     return texte
     
+    
 def me_str(message):
     """ renvoie la string correspondant a la commande !me """
   
@@ -216,6 +221,7 @@ def me_str(message):
     
     # renvoie le texte 
     return texte
+
 
 def pub_str():
     """ renvoie la string correspondant à la commande !pub """
@@ -280,10 +286,14 @@ def profil_str(message):
 #########################################################################################
 """
 
+
 async def log(ctx):
     """ redirige les logs commandes vers le salon bot-logs """
     
+    # récupère le channel où il faut envoyer les logs
     channel = discord.utils.get(ctx.message.server.channels, name="bot-logs")
+    
+    # envoie le log
     await bot.send_message(channel,log_str(ctx.message))
     
     
@@ -299,37 +309,31 @@ def log_str(message):
     return log
     
 
-
 """
 #########################################################################################
 #                                Fonctions de check                               
 #########################################################################################
 """
 
+
 def check_staff(message):
     """ renvoie True si l'auteur est un membre du staff sinon False """
+    
+    # initialisation
     membre = message.author 
-    roles = []
-    for r in membre.roles :
-        roles.append(str(r))
-        
-    for role in roles :
-        if role == "staff":
-            return True
-    return False
+    
+    # renvoie le résultat du test des rôles
+    return check_roles(message,membre,["staff"])
+ 
    
-def check_roles(message,membre_id,liste_roles):
+def check_roles(message,membre,liste_roles):
     """ renvoie True si l'utilisateur avec l'id donné, a la liste de rôles donnée """
     
     # initialisation
-    membre = ""
     roles = []
     nb_roles = 0
     nb_liste_roles = 0
     nb_valide = 0
-    
-    # on récupère notre membre
-    membre = get_membre(message,membre_id)
     
     # on récupère les rôles
     roles = get_roles(message,membre)
@@ -366,6 +370,7 @@ def check_roles(message,membre_id,liste_roles):
 #########################################################################################
 """
 
+
 def getTime():
     """ renvoie la str de l'heure actuelle """
     
@@ -383,7 +388,8 @@ def get_membre(message, membre_id):
         # si on a trouvé le joueur mentionné
         if courant_name == membre_id or courant_name2 == membre_id:
             return m
-            
+
+
 def get_roles(message,membre):
     """ renvoie la liste des rôles du membre donné sous forme de str """
     
@@ -397,6 +403,7 @@ def get_roles(message,membre):
     # renvoie la liste des rôles sous forme de liste de str
     return roles
     
+    
 """
 #########################################################################################
 #                                       Main                                     
@@ -404,4 +411,5 @@ def get_roles(message,membre):
 """ 
 
 bot.run(secrets.ID_BOT)
+
 
