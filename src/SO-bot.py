@@ -6,7 +6,8 @@
 #   Requirements :  python3.7 and discord.py
 #   User.name :     Bastien Marais
 #   User.email :    marais.bas@gmail.com                        
-#   Trucs utiles :  https://cog-creators.github.io/discord-embed-sandbox/
+#   Ressources :    https://cog-creators.github.io/discord-embed-sandbox/
+#                   http://discordpy.readthedocs.io/en/latest/api.html
 #########################################################################################
 
 
