@@ -6,6 +6,7 @@
 #   Requirements :  python3.7 and discord.py
 #   User.name :     Bastien Marais
 #   User.email :    marais.bas@gmail.com                        
+#   Trucs utiles :  https://cog-creators.github.io/discord-embed-sandbox/
 #########################################################################################
 
 
@@ -73,13 +74,20 @@ async def me(ctx ,*args) :
         
 
 @bot.command(pass_context = True)
-async def aff(ctx ,*, message : str):
+async def profil(ctx ,*, message : str):
     """ [PSEUDO]  affiche le profil SpaceOrigin du joueur passé en paramètre """
  
     print(log_str("COMMANDE",ctx.message))
-    await bot.say("http://bigbang.spaceorigin.fr/profile/"+message)
+    await bot.say(profil_str(message))
 
-            
+@bot.command(pass_context = True)
+async def pub(ctx, *args):
+    """ []  fait de la pub pour SpaceOrigin """
+
+    print(log_str("COMMANDE",ctx.message))
+    await bot.say(pub_str())
+
+
 
 """
 #########################################################################################
@@ -116,21 +124,65 @@ def log_str(log_type,message):
     
     # initialisation
     log = ""
-    if message.content.startswith("!"):
-        log_type = "COMMANDE"
-    
-    # si c'est un message 
-    if log_type == "MESSAGE":
-        log = "| " + log_type + " | " + str(message.channel) + " | " + str(message.author) + " : " + message.content
         
     # si c'est une commande
-    elif log_type == "COMMANDE" :
-        log = str(message.timestamp) + " | " + str(message.author) + " | " + log_type + " | " + message.content 
+    if log_type == "COMMANDE" :
+        log =  log_type + " | " + str(message.timestamp) + " | " + str(message.author) + " | " + message.content 
     
     # renvoie le log formaté
     return log
+
+def pub_str():
+    """ renvoie la string correspondant à la commande !pub """
+
+    # initialisations
+    texte = ""    
+    URL_JEU = "https://play.spaceorigin.fr/"
+    URL_BOUTIQUE = ""
+    URL_TCHAT = ""
+    URL_FORUM = ""
+    URL_DISCORD = ""
+    EVENT = "Concours CBEE : Restaurations des Données [En cours]"
+    URL_VOTE = ["","",""]
+
+
+    # mise en forme
+    texte += "```md\n##########\n# PUB\n##########\n\n"
+    texte += "# Jeu :\n* " + URL_JEU + "\n"
+    texte += "# Shop :\n* " + URL_BOUTIQUE + "\n\n"
+
+    texte += "# Jeu :\n* " + URL_TCHAT + "\n"
+    texte += "# Forum :\n* " + URL_FORUM + "\n"
+    texte += "# Discord :\n* " + URL_DISCORD + "\n\n"
+
+    if EVENT != "" :
+        texte += "# Event :\n" + EVENT + "\n\n"
+
+    texte += "# Voter pour Spaceorigin sur :\n"
+    for url in URL_VOTE :
+        texte += "* " + url + "\n"
+
+    texte += "\n##########\n# PUB\n##########\n```"
+
+    # renvoie le texte formaté
+    return texte
     
-    
+
+def profil_str(message):
+    """ renvoie la string correspondant à la commande !profil """
+
+    # initialisations 
+    texte = ""
+    args = message.split(" ")
+    URL = "http://bigbang.spaceorigin.fr/profile/"
+
+    # mise en forme
+    for j in args :
+        texte += URL + j +"\n" 
+
+    # renvoie la string formatée
+    return texte
+
 """
 #########################################################################################
 #                                Fonctions de check                                     
