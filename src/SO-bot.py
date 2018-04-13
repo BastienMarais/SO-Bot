@@ -48,7 +48,7 @@ async def on_ready():
 
 @bot.command(pass_context = True)
 async def say(ctx ,*, message : str) :
-    """ [MESSAGE] fait écrire votre message par le bot """
+    """ [MESSAGE] Ecrit votre message par le bot, réservé au staff. """
     
     # si c'est un membre du staff voulant le faire
     if check_staff(ctx.message):
@@ -66,7 +66,7 @@ async def say(ctx ,*, message : str) :
     
 @bot.command(pass_context = True)
 async def me(ctx ,*args) : 
-    """ []  affiche son profil discord sur le serveur """
+    """ []  Affiche son profil discord sur le serveur. """
     
     print(log_str("COMMANDE",ctx.message))
     await bot.say(me_str(ctx.message))
@@ -75,14 +75,14 @@ async def me(ctx ,*args) :
 
 @bot.command(pass_context = True)
 async def profil(ctx ,*, message : str):
-    """ [PSEUDO]  affiche le profil SpaceOrigin du joueur passé en paramètre """
+    """ [JOUEURS] Affiche le profil SpaceOrigin des JOUEURS, séparer par ' '. """
  
     print(log_str("COMMANDE",ctx.message))
     await bot.say(profil_str(message))
 
 @bot.command(pass_context = True)
 async def pub(ctx, *args):
-    """ []  fait de la pub pour SpaceOrigin """
+    """ [] Fait de la pub pour SpaceOrigin. """
 
     print(log_str("COMMANDE",ctx.message))
     await bot.say(pub_str())
