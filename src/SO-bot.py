@@ -36,14 +36,20 @@ bot = Bot(command_prefix="!")
 @bot.event
 async def on_ready():
     """ s'éxécute quand le bot est connecté et opérationnel """
+    
+    # initialisation
     texte = "`Connexion...`\n"
     name = bot.user.name + "#" + bot.user.discriminator
     
+    # mise en forme
     texte += "     Logged in as : " + name + "\n"
     texte += "     ID : " + bot.user.id + "\n"
     texte += "     Time : " + getTime()
+    
+    # génération d'un log console
     print(texte)
     
+    # génération d'un log sur bot-logs
     channel = discord.Object("434349278283038760")
     await bot.send_message(channel,texte)
         
@@ -51,7 +57,10 @@ async def on_ready():
 async def on_member_join(member):
     """ s'éxécute quand quelqu'un rejoint le serveur """
     
+    # initialisation
     texte = welcome_str()
+    
+    # envoi un message au nouveau membre
     await bot.send_message(member,texte)
     
 """
@@ -73,6 +82,7 @@ async def say(ctx ,*, message : str) :
     else :
         msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
 
+    # génération d'un log sur bot-logs
     await log(ctx)
     await bot.say(msg)
 
@@ -82,7 +92,10 @@ async def say(ctx ,*, message : str) :
 async def me(ctx ,*args) : 
     """ []  Affiche son profil discord sur le serveur. """
     
+    # génération d'un log sur bot-logs
     await log(ctx)
+    
+    # envoie le message sur le même channel
     await bot.say(me_str(ctx.message))
 
         
@@ -90,15 +103,21 @@ async def me(ctx ,*args) :
 @bot.command(pass_context = True)
 async def profil(ctx ,*, message : str):
     """ [JOUEURS] Affiche le profil SpaceOrigin des JOUEURS, séparer par ' '. """
- 
+
+    # génération d'un log sur bot-logs
     await log(ctx)
+    
+    # envoie le message sur le même channel    
     await bot.say(profil_str(message))
 
 @bot.command(pass_context = True)
 async def pub(ctx, *args):
     """ [] Fait de la pub pour SpaceOrigin. """
 
+    # génération d'un log sur bot-logs
     await log(ctx)
+    
+    # envoie le message sur le même channel
     await bot.say(pub_str())
 
 
@@ -119,7 +138,10 @@ async def mute(ctx ,*, message : str) :
     else :
         msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
 
+    # génération d'un log sur bot-logs
     await log(ctx)
+    
+    # envoie le message sur le même channel
     await bot.say(msg)
     
     
