@@ -18,10 +18,7 @@
 """
 
 
-import os
-import csv
 import requests
-import http.cookiejar
 from bs4 import BeautifulSoup
 
 

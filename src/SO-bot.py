@@ -3,7 +3,7 @@
 #   Description :   Ce programme gère le bot discord du même nom
 #   File :          SO-bot.py
 #   Usage :         python3 SO-bot.py
-#   Requirements :  python3.7 and discord.py
+#   Requirements :  python3 and discord.py
 #   User.name :     Bastien Marais
 #   User.email :    marais.bas@gmail.com                        
 #   Ressources :    https://cog-creators.github.io/discord-embed-sandbox/
@@ -22,7 +22,7 @@ import discord
 import asyncio
 from discord.ext.commands import Bot
 import time 
-from player import * 
+from joueur import * 
 
 # contient ID_BOT
 import secrets
