@@ -69,14 +69,17 @@ class Joueur :
         requete = requests.get(self.url)
         page = requete.content
         soup = BeautifulSoup(page, "lxml")
+        soup = soup.find("div", {"id" : "left"})
         
-        self.pseudo = soup.find("div", {"id": "username"}).string
-        self.race = soup.find("div", {"id": "race", "class" : "value"}).string
-        self.planete = soup.find("div", {"id": "planet"}).get("alt")
-        self.level = soup.find("div", {"id": "level", "class" : "value"}).string
-        self.xp = soup.find("div", {"id": "xp", "class" : "value"}).string
-        self.rang = soup.find("div", {"id": "rank", "class" : "value"}).string
-        self.rang_planete = soup.find("div", {"id": "planet_rank", "class" : "value"}).string
+        # si on a vraiment un joueur de ce nom
+        if soup :
+            self.pseudo = soup.find("div", {"id": "username"}).string
+            self.race = soup.find("div", {"id": "race", "class" : "value"}).string
+            self.planete = soup.find("div", {"id": "planet"}).get("alt")
+            self.level = soup.find("div", {"id": "level", "class" : "value"}).string
+            self.xp = soup.find("div", {"id": "xp", "class" : "value"}).string
+            self.rang = soup.find("div", {"id": "rank", "class" : "value"}).string
+            self.rang_planete = soup.find("div", {"id": "planet_rank", "class" : "value"}).string
         
         # on tente de compléter les infos avec le mur des joueurs
         requete = requests.get("http://bigbang.spaceorigin.fr/players")
@@ -130,6 +133,10 @@ class Joueur :
     def __str__(self):
         """ renvoie la string automatiquement lors des conversions en str """
         
+        # si le joueur existe pas
+        if self.pseudo == "" :
+            return "```md\n# Ce joueur n'éxiste pas !\n```"
+            
         texte = "```md\n"
         texte += "# Pseudo : " + self.pseudo + "\n"
         texte += "Race : " + self.race + "\n"

@@ -30,6 +30,9 @@ import secrets
 # initialisation du bot
 bot = Bot(command_prefix="!") 
 
+URL_WAIT = "https://media.giphy.com/media/i9pILLyvafPkk/giphy.gif"
+URL_MUTE = "https://78.media.tumblr.com/tumblr_lrh786mY3U1qlwcbao1_500.gif"
+
 
 """
 #########################################################################################
@@ -113,8 +116,13 @@ async def profil(ctx ,*, message : str):
     # génération d'un log sur bot-logs
     await log(ctx)
     
-    # envoie le message sur le même channel    
-    await bot.say(Joueur(message))
+    # texte du message d'attente
+    texte = "`Veuillez patienter...`\n" + URL_WAIT
+    
+    # envoie la réponse et le message d'attente sur le même channel
+    my_message = await bot.send_message(ctx.message.channel,texte)
+    await bot.say(profil_str(message))
+    await bot.delete_message(my_message)
 
 
 @bot.command(pass_context = True)
@@ -166,7 +174,6 @@ def mute_str(ctx):
     texte = ""
     cible_val = ""
     args = ctx.message.content.split(" ")
-    URL_GIF = "https://78.media.tumblr.com/tumblr_lrh786mY3U1qlwcbao1_500.gif"
   
     # on récupère le membre et son nom
     m = get_membre(ctx.message,args[1])  
@@ -179,7 +186,7 @@ def mute_str(ctx):
     # mise en forme
     texte += "```md\n# MUTE\n"
     texte += "Cible : " + cible_val + "\nDurée : " + duree_val + "\n```"
-    texte += "\n" + URL_GIF + "\n"
+    texte += "\n" + URL_MUTE + "\n"
        
     # renvoie la chaine formatée
     return texte
@@ -272,11 +279,10 @@ def profil_str(message):
     # initialisations 
     texte = ""
     args = message.split(" ")
-    URL = "http://bigbang.spaceorigin.fr/profile/"
 
     # mise en forme
     for j in args :
-        texte += URL + j +"\n" 
+        texte += str(Joueur(j)) + "\n"
 
     # renvoie la string formatée
     return texte
