@@ -52,6 +52,7 @@ class Joueur :
         """ constructeur """
         
         # initialisation
+        pseudo = pseudo.lower()
         self.pseudo = ""
         self.race = ""
         self.planete = ""
