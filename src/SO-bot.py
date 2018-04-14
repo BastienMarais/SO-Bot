@@ -22,6 +22,7 @@ import discord
 import asyncio
 from discord.ext.commands import Bot
 import time 
+from player import * 
 
 # contient ID_BOT
 import secrets
@@ -113,7 +114,7 @@ async def profil(ctx ,*, message : str):
     await log(ctx)
     
     # envoie le message sur le même channel    
-    await bot.say(profil_str(message))
+    await bot.say(Joueur(message))
 
 
 @bot.command(pass_context = True)
