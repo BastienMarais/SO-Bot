@@ -1,8 +1,8 @@
 #coding: utf-8
 #########################################################################################
 #   Description :   Ce programme permet de récupérer le profil des joueurs de SO
-#   File :          player.py
-#   Usage :         python3 player.py
+#   File :          joueur.py
+#   Usage :         python3 joueur.py
 #   Requirements :  pip install bs4 requests
 #   User.name :     Bastien Marais
 #   User.email :    marais.bas@gmail.com                        
