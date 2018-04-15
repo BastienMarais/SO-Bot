@@ -32,6 +32,15 @@ bot = Bot(command_prefix="!")
 
 URL_WAIT = "https://media.giphy.com/media/i9pILLyvafPkk/giphy.gif"
 URL_MUTE = "https://78.media.tumblr.com/tumblr_lrh786mY3U1qlwcbao1_500.gif"
+URL_KING = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf01.png"
+URL_ASSISTANT = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf02.png"
+URL_MOD_FORUM = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf03.png"
+URL_ANIM = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf04.png"
+URL_MOD_JEU = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf05.png"
+URL_ADMIN = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf06.png"
+RED = discord.Colour(7014674)
+GREEN = discord.Colour(3445292)
+BLUE = discord.Colour(3052451)
 
 
 """
@@ -106,7 +115,7 @@ async def me(ctx ,*args) :
     await log(ctx)
     
     # envoie le message sur le même channel
-    await bot.say(me_str(ctx.message))
+    await bot.say(embed=me_emb(ctx.message))
 
         
 @bot.command(pass_context = True)
@@ -140,26 +149,30 @@ async def pub(ctx, *args):
 async def mute(ctx ,*, message : str) :
     """ [JOUEUR] [INT] [h/j] """
     
-    # initialisation 
+    # initialisation     
     msg = ""
     
     # si c'est un membre du staff voulant le faire
     if check_staff(ctx.message):
     
-        msg = mute_str(ctx)
+        msg = mute_emb(ctx)
         await bot.delete_message(ctx.message)
+        
+        # envoie le message sur le même channel
+        await bot.say(embed=msg)
         
     # sinon
     else :
         msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
-
+        
+        # envoie le message sur le même channel
+        await bot.say(msg)
+        
     # génération d'un log sur bot-logs
     await log(ctx)
     
-    # envoie le message sur le même channel
-    await bot.say(msg)
     
-
+    
 """
 #########################################################################################
 #                            Fonctions d'affichage                                   
@@ -167,13 +180,17 @@ async def mute(ctx ,*, message : str) :
 """
 
 
-def mute_str(ctx):
-    """ renvoie la string d'affichage de !mute """
+def mute_emb(ctx):
+    """ renvoie le embed de !mute """
     
     # initialisation
-    texte = ""
     cible_val = ""
     args = ctx.message.content.split(" ")
+    embed = discord.Embed(title="`Un MUTE est tombé !`", colour=RED, url="", description="")
+    embed.set_image(url=URL_MUTE)
+    embed.set_thumbnail(url=URL_ADMIN)
+    embed.set_author(name="SO-Tribunal", url="", icon_url=URL_ADMIN)
+    embed.set_footer(text="A la prochaine ;-)", icon_url="")
   
     # on récupère le membre et son nom
     m = get_membre(ctx.message,args[1])  
@@ -182,15 +199,13 @@ def mute_str(ctx):
     # on récupère la durée et l'unité ( h / j ) 
     duree_val = str(args[2])
     duree_val += str(args[3])
-    
-    # mise en forme
-    texte += "```md\n# MUTE\n"
-    texte += "Cible : " + cible_val + "\nDurée : " + duree_val + "\n```"
-    texte += "\n" + URL_MUTE + "\n"
-       
-    # renvoie la chaine formatée
-    return texte
-    
+
+    embed.add_field(name="Cible : ", value=cible_val,inline=True)
+    embed.add_field(name="Durée : ", value=duree_val,inline=True)
+
+    # renvoie l'embed correspondant
+    return embed
+
 
 def welcome_str():
     """ renvoie la string du message d'accueil """
@@ -206,30 +221,29 @@ def welcome_str():
     return texte
     
     
-def me_str(message):
+def me_emb(message):
     """ renvoie la string correspondant a la commande !me """
   
     # initialisation
     membre = message.author
     roles = []
     t = str(membre.joined_at.strftime("%d/%m/%y  %H:%M"))
+    embed = discord.Embed(title="`Votre profil discord`", colour=BLUE, url="", description="")
+    embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+    embed.set_thumbnail(url=URL_MOD_FORUM)
+    embed.set_footer(text="Heureux de vous avoir aidé ;-)", icon_url="")
     
     # on transforme chacun des rôles en str
-    for r in membre.roles : 
-        roles.append(str(r))
-        
-    # on retire everyone 
-    roles.remove("@everyone") 
+    roles = get_roles(message,membre)
                 
-    # mise en forme du texte a afficher
-    texte = "```md\n"
-    texte += "# Pseudo : " + membre.display_name + "\n"
-    texte += "Rôle(s) : " + str(roles) + "\n"
-    texte += "Date d'arrivée : " + str(t) + "\n"
-    texte += "```"
+    # mise en forme du embed a afficher
+    embed.add_field(name="Pseudo : ", value=membre.display_name,inline=True)
+    embed.add_field(name="Date d'arrivée : ", value=str(t),inline=True)
+    embed.add_field(name="Rôles : ", value=str(roles),inline=False)
     
-    # renvoie le texte 
-    return texte
+    
+    # renvoie l'embed 
+    return embed
 
 
 def pub_str():
@@ -377,7 +391,7 @@ def check_roles(message,membre,liste_roles):
 #                                Fonctions utilitaires                                     
 #########################################################################################
 """
-
+    
 
 def getTime():
     """ renvoie la str de l'heure actuelle """
@@ -408,6 +422,9 @@ def get_roles(message,membre):
     for r in membre.roles :
         roles.append(str(r))
         
+    # on retire everyone 
+    roles.remove("@everyone") 
+    
     # renvoie la liste des rôles sous forme de liste de str
     return roles
     
