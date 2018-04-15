@@ -43,6 +43,8 @@ class Joueur :
         self.role_alliance
         self.role_planete
         self.url
+        self.avatar
+        self.complete
     """
     
     def __init__(self,pseudo):
@@ -62,6 +64,8 @@ class Joueur :
         self.role_planete = ""
         self.role_alliance = ""
         self.url = ""
+        self.avatar = "http://bigbang.spaceorigin.fr"
+        self.complete = False
         
         
          # il on récupère les infos de base
@@ -76,10 +80,16 @@ class Joueur :
             self.pseudo = soup.find("div", {"id": "username"}).string
             self.race = soup.find("div", {"id": "race", "class" : "value"}).string
             self.planete = soup.find("div", {"id": "planet"}).get("alt")
+            
+            # si le joueur n'a pas de planète
+            if self.planete == "" or not self.planete :
+            	self.planete = "Pas de planète"
+            	
             self.level = soup.find("div", {"id": "level", "class" : "value"}).string
             self.xp = soup.find("div", {"id": "xp", "class" : "value"}).string
             self.rang = soup.find("div", {"id": "rank", "class" : "value"}).string
             self.rang_planete = soup.find("div", {"id": "planet_rank", "class" : "value"}).string
+            self.avatar += soup.find("img", {"alt" : self.pseudo }).get("src")
         
         # on tente de compléter les infos avec le mur des joueurs
         requete = requests.get("http://bigbang.spaceorigin.fr/players")
@@ -90,6 +100,10 @@ class Joueur :
            
         # si on a trouvé une fiche
         if fiche_perso :
+        
+            # indique qu'on a toutes les infos dispo
+            self.complete = True
+            
             # récupération des données
             self.points = fiche_perso.find("div", {"class" : "wall-item-points" }).string
             self.alliance = fiche_perso.find("div", {"class" : "wall-item-alliance-name" }).string
@@ -164,6 +178,8 @@ class Joueur :
             texte += "Points : " + self.points + "\n"
             
         texte += "Url : " + self.url + "\n"
+        texte += "Avatar : " + self.avatar + "\n"
+        texte += "Fiche complète : " + self.complete + "\n"
         texte += "```"
     
         # renvoie la str correspondant au Joueur

@@ -38,9 +38,10 @@ URL_MOD_FORUM = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar
 URL_ANIM = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf04.png"
 URL_MOD_JEU = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf05.png"
 URL_ADMIN = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf06.png"
-RED = discord.Colour(7014674)
-GREEN = discord.Colour(3445292)
-BLUE = discord.Colour(3052451)
+RED = discord.Colour(7014674) # en cas de sanction et erreur
+GREEN = discord.Colour(3445292) # en cas de succès ou récompense
+BLUE = discord.Colour(3052451) # en cas d'affichage d'information
+YELLOW = discord.Colour(9597740) # en cas de pub
 
 
 """
@@ -76,10 +77,10 @@ async def on_member_join(member):
     """ s'éxécute quand quelqu'un rejoint le serveur """
     
     # initialisation
-    texte = welcome_str()
+    texte = welcome_emb()
     
     # envoi un message au nouveau membre
-    await bot.send_message(member,texte)
+    await bot.send_message(member,embed = texte)
     
     
 """
@@ -115,7 +116,7 @@ async def me(ctx ,*args) :
     await log(ctx)
     
     # envoie le message sur le même channel
-    await bot.say(embed=me_emb(ctx.message))
+    await bot.say(embed=me_emb(ctx))
 
         
 @bot.command(pass_context = True)
@@ -126,11 +127,17 @@ async def profil(ctx ,*, message : str):
     await log(ctx)
     
     # texte du message d'attente
-    texte = "`Veuillez patienter...`\n" + URL_WAIT
-    
+    tmp_embed = discord.Embed(title="`Veuillez patienter...`", colour=BLUE, url="", description="")
+    tmp_embed.set_author(name="SO-INFO", url="", icon_url=URL_ANIM)
+    tmp_embed.set_image(url=URL_WAIT)
+
     # envoie la réponse et le message d'attente sur le même channel
-    my_message = await bot.send_message(ctx.message.channel,texte)
-    await bot.say(profil_str(message))
+    my_message = await bot.send_message(ctx.message.channel,embed = tmp_embed)
+    
+    liste_emb = profil_emb(message)
+    for e in liste_emb :
+        await bot.say(embed=e)
+        
     await bot.delete_message(my_message)
 
 
@@ -142,7 +149,7 @@ async def pub(ctx, *args):
     await log(ctx)
     
     # envoie le message sur le même channel
-    await bot.say(pub_str())
+    await bot.say(embed = pub_emb())
 
 
 @bot.command(pass_context = True)
@@ -172,7 +179,6 @@ async def mute(ctx ,*, message : str) :
     await log(ctx)
     
     
-    
 """
 #########################################################################################
 #                            Fonctions d'affichage                                   
@@ -187,19 +193,21 @@ def mute_emb(ctx):
     cible_val = ""
     args = ctx.message.content.split(" ")
     embed = discord.Embed(title="`Un MUTE est tombé !`", colour=RED, url="", description="")
-    embed.set_image(url=URL_MUTE)
-    embed.set_thumbnail(url=URL_ADMIN)
-    embed.set_author(name="SO-Tribunal", url="", icon_url=URL_ADMIN)
-    embed.set_footer(text="A la prochaine ;-)", icon_url="")
-  
+    
     # on récupère le membre et son nom
-    m = get_membre(ctx.message,args[1])  
+    m = ctx.message.mentions[0]  
     cible_val = m.name + "#" + m.discriminator 
+    avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
             
     # on récupère la durée et l'unité ( h / j ) 
     duree_val = str(args[2])
     duree_val += str(args[3])
 
+    # mise ne forme de l'embed
+    embed.set_author(name="SO-Tribunal", url="", icon_url=URL_ADMIN)
+    embed.set_thumbnail(url=avatar)
+    embed.set_footer(text="A la prochaine ;-)", icon_url="")
+    embed.set_image(url=URL_MUTE)
     embed.add_field(name="Cible : ", value=cible_val,inline=True)
     embed.add_field(name="Durée : ", value=duree_val,inline=True)
 
@@ -207,50 +215,63 @@ def mute_emb(ctx):
     return embed
 
 
-def welcome_str():
-    """ renvoie la string du message d'accueil """
+def welcome_emb():
+    """ renvoie l'embed du message d'accueil """
     
     # initialisation
-    texte = ""
+    embed = discord.Embed(title="`BIENVENUE SUR SO OFFICIEL`", colour=GREEN, url="", description="")
+    aFaire = "Passez sur le salon demandes d\'accès pour obtenir vos rôles et ainsi pouvoir parler."
+    aFaire += "\nRegardez le message épinglé de ce salon tout est expliqué."
     
     # mise en forme 
-    texte += "Bonjour et bienvenue sur SO Officiel !\n"
-    texte += "Passez sur le salon demandes d\'accès pour obtenir vos rôles.\n"
-    texte += "Regardez le message épinglé de ce salon tout est expliqué."
+    embed.set_author(name="SO-BOT", url="", icon_url=URL_ANIM)
+    embed.set_thumbnail(url=URL_ANIM)
+    embed.add_field(name="Que faire en arrivant ?", value=aFaire,inline=False)
+    embed.set_footer(text="Heureux de vous compter parmis nous ;-)", icon_url="")
     
-    return texte
+    return embed
     
     
-def me_emb(message):
-    """ renvoie la string correspondant a la commande !me """
+def me_emb(ctx):
+    """ renvoie l'embed correspondant à la commande !me """
   
     # initialisation
+    message = ctx.message
     membre = message.author
     roles = []
     t = str(membre.joined_at.strftime("%d/%m/%y  %H:%M"))
     embed = discord.Embed(title="`Votre profil discord`", colour=BLUE, url="", description="")
-    embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
-    embed.set_thumbnail(url=URL_MOD_FORUM)
-    embed.set_footer(text="Heureux de vous avoir aidé ;-)", icon_url="")
+    avatar = "https://cdn.discordapp.com/avatars/" + membre.id + "/" + membre.avatar +".png"
     
     # on transforme chacun des rôles en str
     roles = get_roles(message,membre)
+    roles_str = ""
+    nb_roles = len(roles)
+    compteur = 0
+    for r in roles :
+        compteur += 1  
+        if compteur != nb_roles :
+            roles_str += r + " , "
+        else :
+            roles_str += r + " ."        
                 
     # mise en forme du embed a afficher
+    embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+    embed.set_thumbnail(url=avatar)
+    embed.set_footer(text="Heureux de vous avoir aidé ;-)", icon_url="")
     embed.add_field(name="Pseudo : ", value=membre.display_name,inline=True)
     embed.add_field(name="Date d'arrivée : ", value=str(t),inline=True)
-    embed.add_field(name="Rôles : ", value=str(roles),inline=False)
-    
+    embed.add_field(name="Rôles : ", value=roles_str,inline=False)
     
     # renvoie l'embed 
     return embed
 
 
-def pub_str():
-    """ renvoie la string correspondant à la commande !pub """
+def pub_emb():
+    """ renvoie l'embed correspondant à la commande !pub """
 
     # initialisations
-    texte = ""    
+    embed = discord.Embed(title="`Liens et infos utiles`", colour=YELLOW, url="", description="")
     URL_JEU = "https://play.spaceorigin.fr/"
     URL_SUPPORT = "http://support.spaceorigin.fr/"
     URL_BOUTIQUE = "http://shop.spaceorigin.fr/"
@@ -262,44 +283,89 @@ def pub_str():
     URL_VOTE = []
     URL_VOTE.append("http://www.jeux-alternatifs.com/SpaceOrigin-jeu647_hit-parade_1_1.html")
     URL_VOTE.append("https://www.mmorpg.fr/classement/space-origin.html")
-
+        
     # mise en forme
-    texte += "```md\n##########\n# PUB\n##########\n\n"
-    texte += "# Jeu :\n* " + URL_JEU + "\n"
-    texte += "# Support :\n* " + URL_SUPPORT + "\n"
-    texte += "# Shop :\n* " + URL_BOUTIQUE + "\n\n"
+    embed.set_author(name="SO-PUB", url="", icon_url=URL_ANIM)
+    embed.set_thumbnail(url=URL_ANIM)
+    embed.add_field(name="Jeu : ", value=URL_JEU,inline=False)
+    embed.add_field(name="Support : ", value=URL_SUPPORT,inline=False)
+    embed.add_field(name="Shop : ", value=URL_BOUTIQUE,inline=False)
+    embed.add_field(name="Tchat : ", value=URL_TCHAT,inline=False)
+    embed.add_field(name="Forum : ", value=URL_FORUM,inline=False)
+    embed.add_field(name="Discord : ", value=URL_DISCORD,inline=False)
+    embed.add_field(name="Facebook : ", value=URL_FACEBOOK,inline=False)
 
-    texte += "# Tchat :\n* " + URL_TCHAT + "\n"
-    texte += "# Forum :\n* " + URL_FORUM + "\n"
-    texte += "# Discord :\n* " + URL_DISCORD + "\n"
-    texte += "# Facebook :\n* " + URL_FACEBOOK + "\n\n"
-
+    # s'il y a un event
     if EVENT != "" :
-        texte += "# Event :\n* " + EVENT + "\n\n"
-
-    texte += "# Voter pour Spaceorigin sur :\n"
+        embed.add_field(name="Event : ", value=EVENT,inline=False)
+        
+    # gère l'affichage des sites de votes
+    texte = ""
     for url in URL_VOTE :
-        texte += "* " + url + "\n"
+        texte += url + "\n"
+    embed.add_field(name="Votez pour Spaceorigin sur : ", value=texte,inline=False)
 
-    texte += "\n##########\n# PUB\n##########\n```"
-
-    # renvoie le texte formaté
-    return texte
+    # renvoie l'embed
+    return embed
     
 
-def profil_str(message):
-    """ renvoie la string correspondant à la commande !profil """
+def profil_emb(message):
+    """ renvoie l'embed correspondant à la commande !profil """
 
-    # initialisations 
-    texte = ""
+    # initialisation
     args = message.split(" ")
+    liste_emb = []
 
-    # mise en forme
+    # pour chaque pseudo passé en paramètre
     for j in args :
-        texte += str(Joueur(j)) + "\n"
-
-    # renvoie la string formatée
-    return texte
+        courant = Joueur(j)
+        
+        # si on a un joueur de ce nom
+        if courant.pseudo != "" : 
+        
+            # si la fiche est complète
+            if courant.complete :
+                embed = discord.Embed(title="", colour=BLUE, url="", description="")
+                embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+                embed.set_thumbnail(url=courant.avatar)
+                embed.add_field(name="Pseudo : ", value=courant.pseudo,inline=True)
+                embed.add_field(name="Race : ", value=courant.race,inline=True)
+                embed.add_field(name="Level : ", value=courant.level,inline=True)
+                embed.add_field(name="Xp : ", value=courant.xp,inline=True)
+                role_pla = courant.planete + " (" +  courant.role_planete + ")"
+                embed.add_field(name="Planète : ", value=role_pla,inline=False)
+                role_all = courant.alliance + " (" +  courant.role_alliance + ")"             
+                embed.add_field(name="Alliance : ", value=role_all,inline=False)
+                embed.add_field(name="Rang général : ", value=courant.rang,inline=True)        
+                embed.add_field(name="Rang planètaire : ", value=courant.rang_planete,inline=True) 
+                embed.add_field(name="Points : ", value=courant.points,inline=False)
+                embed.add_field(name="Url : ", value=courant.url, inline = False)
+            
+            # si fiche incomplète
+            else :
+                embed = discord.Embed(title="", colour=BLUE, url="", description="")
+                embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+                embed.set_thumbnail(url=courant.avatar)
+                embed.add_field(name="Pseudo : ", value=courant.pseudo,inline=True)
+                embed.add_field(name="Race : ", value=courant.race,inline=True)
+                embed.add_field(name="Level : ", value=courant.level,inline=True)
+                embed.add_field(name="Xp : ", value=courant.xp,inline=True)
+                embed.add_field(name="Planète : ", value=courant.planete,inline=False)
+                embed.add_field(name="Rang général : ", value=courant.rang,inline=True)        
+                embed.add_field(name="Rang planètaire : ", value=courant.rang_planete,inline=True) 
+                embed.add_field(name="Url : ", value=courant.url, inline = False)
+        
+        # le pseudo n'appartient a aucun joueur
+        else :
+            embed = discord.Embed(title="", colour=RED, url="", description="")
+            embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+            error = "Le joueur " + j + " n'éxiste pas..."
+            embed.add_field(name="Error : ", value=error,inline=False)
+        
+        liste_emb.append(embed)
+        
+    # renvoie les embeds
+    return liste_emb
 
 
 """
@@ -397,19 +463,6 @@ def getTime():
     """ renvoie la str de l'heure actuelle """
     
     return str("`" + time.strftime("%d/%m/%y  %H:%M",time.localtime()) + "`")
-
-
-def get_membre(message, membre_id):
-    """ renvoie un objet de type membre correspondant a la recherche """
-    
-    # on regarde tous les membres du serveur
-    for m in message.server.members :
-        courant_name = str("<@" + m.id + ">")
-        courant_name2 = str("<@!" + m.id + ">")
-        
-        # si on a trouvé le joueur mentionné
-        if courant_name == membre_id or courant_name2 == membre_id:
-            return m
 
 
 def get_roles(message,membre):
