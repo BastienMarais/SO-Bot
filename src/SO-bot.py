@@ -231,7 +231,7 @@ async def roles(ctx ,*, message : str) :
     # génération d'un log sur bot-logs
     await log(ctx)
     
-    
+  
 @bot.command(pass_context = True)
 async def reset(ctx ,*, message : str):
     """ [JOUEUR] permet d'enlever les rôles du joueur avant un !roles ou !mute """
@@ -276,7 +276,69 @@ async def reset(ctx ,*, message : str):
 #                            Différentes commandes ALL                                     
 #########################################################################################
 """   
-   
+
+
+@bot.command(pass_context = True)
+async def rand(ctx ,*, message : str):
+    """ [NB_ESSAIS] [MIN] [MAX] renvoie le(s) nombre(s) aléatoire(s) demandé(s) """
+    
+    # génération de log
+    await log(ctx) 
+    
+    # initialisation
+    limite_essais = 50
+    limite_max = 1000
+    limite_min = -1000
+    nb_essais = int(message.split(" ")[0])
+    mini = int(message.split(" ")[1])
+    maxi = int(message.split(" ")[2])
+    liste_nb = []
+    unique = {}
+    texte = "**Résultat :** \n"
+    compteur = 0
+    liste_unique = []
+    
+    # on check les limites 
+    if maxi > limite_max :
+        maxi = limite_max
+    if mini < limite_min :
+        mini = limite_min
+    if nb_essais > limite_essais :
+        nb_essais = limite_essais
+    
+    # on fait les tirages
+    for i in range(nb_essais):
+        liste_nb.append(randint(mini,maxi))
+    liste_nb.sort()
+        
+    # on ajoute au texte les tirages
+    for nb in range(0,len(liste_nb)):
+        if liste_nb[nb] in unique.keys():
+            unique[liste_nb[nb]] += 1
+        else :
+            unique[liste_nb[nb]] = 1
+    
+    # affichage
+    for c in unique.keys():
+        liste_unique.append(int(c))
+        
+    liste_unique.sort()
+    
+    for cle in liste_unique:
+        if unique[cle] == 1 :
+            texte += "[" + str(cle) + "]"
+        else :
+            texte += "[" + str(cle) + "] * " + str(unique[cle])
+            
+        if compteur < len(liste_unique) - 1 :
+            texte += " , "
+        else :
+            texte += " . "
+        compteur += 1
+    
+    # affiche le résultat
+    await bot.say(texte)
+    
     
 @bot.command(pass_context = True)
 async def me(ctx ,*args) : 
