@@ -25,7 +25,7 @@ import time
 from joueur import * 
 from random import *
 
-# contient ID_BOT, secrets.ID_CHAN_BOT et secrets.ID_CHAN_LOG
+# contient ID_BOT, ID_CHAN_BOT et ID_CHAN_LOG
 import secrets
 
 # initialisation du bot
