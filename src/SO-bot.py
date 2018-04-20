@@ -23,6 +23,7 @@ import asyncio
 from discord.ext.commands import Bot
 import time 
 from joueur import * 
+from random import *
 
 # contient ID_BOT
 import secrets
@@ -31,6 +32,9 @@ import secrets
 bot = Bot(command_prefix="!") 
 
 URL_WAIT = "https://media.giphy.com/media/i9pILLyvafPkk/giphy.gif"
+URL_WAIT2 = "https://media.giphy.com/media/Ml1xQjpBncN4k/giphy.gif"
+URLS_WAIT = [URL_WAIT,URL_WAIT2]
+URL_DEMUTE = "https://media.giphy.com/media/LtlYX81u51Uys/giphy.gif"
 URL_MUTE = "https://78.media.tumblr.com/tumblr_lrh786mY3U1qlwcbao1_500.gif"
 URL_KING = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf01.png"
 URL_ASSISTANT = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf02.png"
@@ -85,7 +89,7 @@ async def on_member_join(member):
     
 """
 #########################################################################################
-#                            Différentes commandes                                     
+#                            Différentes commandes STAFF                                     
 #########################################################################################
 """
 
@@ -107,10 +111,176 @@ async def say(ctx ,*, message : str) :
     await log(ctx)
     await bot.say(msg)
 
+
+@bot.command(pass_context = True)
+async def mute(ctx ,*, message : str) :
+    """ [JOUEUR] mute le joueur, doit être précédé de !reset """
+    
+    # initialisation     
+    msg = ""
+    
+    # si c'est un membre du staff voulant le faire
+    if check_staff(ctx.message):
+    
+        # initialisation 
+        msg = mute_emb(ctx)
+        roles = {}
+        for r in ctx.message.server.roles :
+            roles[r.name] = r
+        membre = ctx.message.mentions[0]
+            
+        await bot.delete_message(ctx.message)
+        await bot.add_roles(membre,roles["MUTE"])
+        
+        # envoie le message sur le même channel
+        await bot.say(embed=msg)
+        
+    # sinon
+    else :
+        
+        # envoie le message sur le même channel
+        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+        await bot.say(msg)
+        
+    # génération d'un log sur bot-logs
+    await log(ctx)
+    
+    
+@bot.command(pass_context = True)
+async def demute(ctx ,*, message : str) :
+    """ [JOUEUR] démute le joueur """
+    
+    # initialisation     
+    msg = ""
+    
+    # si c'est un membre du staff voulant le faire
+    if check_staff(ctx.message):
+    
+        # initialisation 
+        msg = demute_emb(ctx)
+        roles = {}
+        for r in ctx.message.server.roles :
+            roles[r.name] = r
+        membre = ctx.message.mentions[0]
+            
+        await bot.delete_message(ctx.message)
+        await bot.remove_roles(membre,roles["MUTE"])
+        
+        # envoie le message sur le même channel
+        await bot.say(embed=msg)
+        
+    # sinon
+    else :
+        
+        # envoie le message sur le même channel
+        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+        await bot.say(msg)
+        
+    # génération d'un log sur bot-logs
+    await log(ctx)
+
+
+@bot.command(pass_context = True)
+async def roles(ctx ,*, message : str) :
+    """ [JOUEUR] [Planète] [citoyen/gouv/empereur] """
+    
+    # initialisation     
+    msg = ""
+    
+    # si c'est un membre du staff voulant le faire
+    if check_staff(ctx.message):
+    
+        # initialisation 
+        membre = ctx.message.mentions[0]
+        planete = message.split(" ")[1]
+        statut = message.split(" ")[2] 
+        roles = {}
+        for r in ctx.message.server.roles :
+            roles[r.name] = r
+            
+        # on attribut le pack de rôles correspondant
+        if statut == "citoyen" :
+            cle = "citoyen" + "-" + planete
+            await bot.add_roles(membre,roles[cle])
+        elif statut == "gouv" :
+            cle1 = "citoyen" + "-" + planete
+            cle2 = "gouv" + "-" + planete
+            await bot.add_roles(membre,roles[cle1], roles[cle2])
+        elif statut == "empereur" :
+            cle1 = "citoyen" + "-" + planete
+            cle2 = "gouv" + "-" + planete
+            cle3 = "empereur" + "-" + planete
+            await bot.add_roles(membre,roles[cle1], roles[cle2], roles[cle3])
+        else :
+            await bot.say("Tu t'es encore fail Billy ! Recommences, ça ne coute rien ;)")
+            return
+            
+        await bot.delete_message(ctx.message)
+        
+        # envoie le message sur le même channel
+        msg = roles_emb(ctx,membre,planete,statut)
+        await bot.say(embed = msg)
+        
+    # sinon
+    else :
+        
+        # envoie le message sur le même channel
+        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+        await bot.say(msg)
+        
+    # génération d'un log sur bot-logs
+    await log(ctx)
+    
+    
+@bot.command(pass_context = True)
+async def reset(ctx ,*, message : str):
+    """ [JOUEUR] permet d'enlever les rôles du joueur avant un !roles ou !mute """
+    
+    # si c'est un membre du staff voulant le faire
+    if check_staff(ctx.message):
+    
+        # initialisation
+        membre = ctx.message.mentions[0] 
+        roles = {}
+        for r in ctx.message.server.roles :
+            roles[r.name] = r
+        
+        # on vire les rôles précédents
+        top_role = membre.top_role
+        if top_role.name.startswith("empereur"):
+            role_planete = top_role.name.split("-")[1]
+            cle1 = "empereur" + "-" + role_planete
+            cle2 = "gouv" + "-" + role_planete
+            cle3 = "citoyen" + "-" + role_planete
+            await bot.remove_roles(membre,roles[cle1], roles[cle2], roles[cle3])           
+        elif top_role.name.startswith("gouv"):
+            role_planete = top_role.name.split("-")[1]
+            cle1 = "gouv" + "-" + role_planete
+            cle2 = "citoyen" + "-" + role_planete
+            await bot.remove_roles(membre,roles[cle1], roles[cle2])
+        elif top_role.name.startswith("citoyen"):
+            role_planete = top_role.name.split("-")[1]
+            cle = "citoyen" + "-" + role_planete      
+            await bot.remove_roles(membre,roles[cle])
+            
+        await bot.delete_message(ctx.message)
+    else :
+
+        # envoie le message sur le même channel
+        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+        await bot.say(msg)
+    
+        
+"""
+#########################################################################################
+#                            Différentes commandes ALL                                     
+#########################################################################################
+"""   
+   
     
 @bot.command(pass_context = True)
 async def me(ctx ,*args) : 
-    """ []  Affiche son profil discord sur le serveur. """
+    """ []  Affiche son profil discord sur le serveur """
     
     # génération d'un log sur bot-logs
     await log(ctx)
@@ -121,7 +291,7 @@ async def me(ctx ,*args) :
         
 @bot.command(pass_context = True)
 async def profil(ctx ,*, message : str):
-    """ [JOUEURS] Affiche le profil SpaceOrigin des JOUEURS, séparer par ' '. """
+    """ [JOUEURS] Affiche le profil SpaceOrigin des JOUEURS, séparer par ' ' """
 
     # génération d'un log sur bot-logs
     await log(ctx)
@@ -129,7 +299,7 @@ async def profil(ctx ,*, message : str):
     # texte du message d'attente
     tmp_embed = discord.Embed(title="`Veuillez patienter...`", colour=BLUE, url="", description="")
     tmp_embed.set_author(name="SO-INFO", url="", icon_url=URL_ANIM)
-    tmp_embed.set_image(url=URL_WAIT)
+    tmp_embed.set_image(url=URLS_WAIT[randint(0,1)])
 
     # envoie la réponse et le message d'attente sur le même channel
     my_message = await bot.send_message(ctx.message.channel,embed = tmp_embed)
@@ -143,7 +313,7 @@ async def profil(ctx ,*, message : str):
 
 @bot.command(pass_context = True)
 async def pub(ctx, *args):
-    """ [] Fait de la pub pour SpaceOrigin. """
+    """ [] Fait apparaitre les liens utiles de SpaceOrigin. """
 
     # génération d'un log sur bot-logs
     await log(ctx)
@@ -152,33 +322,6 @@ async def pub(ctx, *args):
     await bot.say(embed = pub_emb())
 
 
-@bot.command(pass_context = True)
-async def mute(ctx ,*, message : str) :
-    """ [JOUEUR] [INT] [h/j] """
-    
-    # initialisation     
-    msg = ""
-    
-    # si c'est un membre du staff voulant le faire
-    if check_staff(ctx.message):
-    
-        msg = mute_emb(ctx)
-        await bot.delete_message(ctx.message)
-        
-        # envoie le message sur le même channel
-        await bot.say(embed=msg)
-        
-    # sinon
-    else :
-        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
-        
-        # envoie le message sur le même channel
-        await bot.say(msg)
-        
-    # génération d'un log sur bot-logs
-    await log(ctx)
-    
-    
 """
 #########################################################################################
 #                            Fonctions d'affichage                                   
@@ -186,22 +329,58 @@ async def mute(ctx ,*, message : str) :
 """
 
 
+def roles_emb(ctx,membre,planete,statut):
+    """ renvoie le embed de !roles """
+    
+    # initialisation
+    embed = discord.Embed(title="Mise à jour des rôles", colour=GREEN, url="", description="")
+    avatar = "https://cdn.discordapp.com/avatars/" + membre.id + "/" + membre.avatar +".png"
+    name = membre.name + "#" + membre.discriminator
+    
+    # mise en forme 
+    embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+    embed.set_thumbnail(url=avatar)
+    embed.add_field(name="Joueur : ", value=name,inline=False)
+    embed.add_field(name="Planète : ", value=planete,inline=True)
+    embed.add_field(name="Statut : ", value=statut,inline=True)
+    
+    # renvoie l'embed correspondant
+    return embed
+              
+            
+def demute_emb(ctx):
+    """ renvoie le embed de !demute """
+    
+    # initialisation
+    cible_val = ""
+    embed = discord.Embed(title="`Un MUTE se termine !`", colour=RED, url="", description="")
+    
+    # on récupère le membre et son nom
+    m = ctx.message.mentions[0]  
+    cible_val = m.name + "#" + m.discriminator 
+    avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
+
+    # mise ne forme de l'embed
+    embed.set_author(name="SO-Tribunal", url="", icon_url=URL_ADMIN)
+    embed.set_thumbnail(url=avatar)
+    embed.set_footer(text="Il sera sage ;-)", icon_url="")
+    embed.set_image(url=URL_DEMUTE)
+    embed.add_field(name="Cible : ", value=cible_val,inline=True)
+
+    # renvoie l'embed correspondant
+    return embed
+
 def mute_emb(ctx):
     """ renvoie le embed de !mute """
     
     # initialisation
     cible_val = ""
-    args = ctx.message.content.split(" ")
     embed = discord.Embed(title="`Un MUTE est tombé !`", colour=RED, url="", description="")
     
     # on récupère le membre et son nom
     m = ctx.message.mentions[0]  
     cible_val = m.name + "#" + m.discriminator 
     avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
-            
-    # on récupère la durée et l'unité ( h / j ) 
-    duree_val = str(args[2])
-    duree_val += str(args[3])
 
     # mise ne forme de l'embed
     embed.set_author(name="SO-Tribunal", url="", icon_url=URL_ADMIN)
@@ -209,7 +388,6 @@ def mute_emb(ctx):
     embed.set_footer(text="A la prochaine ;-)", icon_url="")
     embed.set_image(url=URL_MUTE)
     embed.add_field(name="Cible : ", value=cible_val,inline=True)
-    embed.add_field(name="Durée : ", value=duree_val,inline=True)
 
     # renvoie l'embed correspondant
     return embed
@@ -229,6 +407,7 @@ def welcome_emb():
     embed.add_field(name="Que faire en arrivant ?", value=aFaire,inline=False)
     embed.set_footer(text="Heureux de vous compter parmis nous ;-)", icon_url="")
     
+    # renvoie l'embed correspondant
     return embed
     
     
