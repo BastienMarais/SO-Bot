@@ -30,7 +30,7 @@ Si tout se passe bien votre shell devrait afficher un message du genre :
 Connexion...
      Logged in as : SO-bot#1722
      ID : 434028726712532992
-     Time : `20/04/18  17:52`
+     Time : 20/04/18  17:52
 ```
 
 ## Différentes commandes :
@@ -87,6 +87,7 @@ Elle ne prend pas de paramètre.
 ### TODO :
 
 * Un jeu du pendu avec pour thématique SpaceOrigin
+* Traducteur d'originel
 * J'ai pas plus d'inspiration pour le moment ^^
 
 
