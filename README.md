@@ -1,2 +1,4 @@
 # SO-bot
-Bot discord for SpaceOrigin
+Bot discord SpaceOrigin
+
+DOCS : https://bastienmarais.github.io/SO-bot/
