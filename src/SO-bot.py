@@ -25,7 +25,7 @@ import time
 from joueur import * 
 from random import *
 
-# contient ID_BOT
+# contient ID_BOT, secrets.ID_CHAN_BOT et secrets.ID_CHAN_LOG
 import secrets
 
 # initialisation du bot
@@ -73,7 +73,7 @@ async def on_ready():
     print(texte)
     
     # génération d'un log sur bot-logs
-    channel = discord.Object("434349278283038760")
+    channel = discord.Object(secrets.ID_CHAN_LOG)
     await bot.send_message(channel,texte)
         
         
@@ -99,177 +99,168 @@ async def on_member_join(member):
 async def say(ctx ,*, message : str) :
     """ [MESSAGE] Ecrit votre message par le bot, réservé au staff. """
     
-    # si c'est un membre du staff voulant le faire
-    if check_staff(ctx.message):
-        msg = message
-        await bot.delete_message(ctx.message)
-        
-    # sinon
-    else :
-        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
+    
+        # si c'est un membre du staff voulant le faire
+        if check_staff(ctx.message):
+            msg = message
+            await bot.delete_message(ctx.message)
+            
+        # sinon
+        else :
+            msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
 
-    # génération d'un log sur bot-logs
-    await log(ctx)
-    await bot.say(msg)
+        # génération d'un log sur bot-logs
+        await log(ctx)
+        await bot.say(msg)
 
 
 @bot.command(pass_context = True)
 async def mute(ctx ,*, message : str) :
-    """ [JOUEUR] mute le joueur, doit être précédé de !reset """
+    """ [JOUEUR] mute le joueur """
     
-    # initialisation     
-    msg = ""
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
     
-    # si c'est un membre du staff voulant le faire
-    if check_staff(ctx.message):
-    
-        # initialisation 
-        msg = mute_emb(ctx)
-        roles = {}
-        for r in ctx.message.server.roles :
-            roles[r.name] = r
-        membre = ctx.message.mentions[0]
+        # initialisation     
+        msg = ""
+        
+        # si c'est un membre du staff voulant le faire
+        if check_staff(ctx.message):
+        
+            # initialisation 
+            msg = mute_emb(ctx)
+            roles = {}
+            for r in ctx.message.server.roles :
+                roles[r.name] = r
+            membre = ctx.message.mentions[0]
+                
+            await bot.delete_message(ctx.message)
+            await bot.replace_roles(membre,roles["MUTE"])
             
-        await bot.delete_message(ctx.message)
-        await bot.add_roles(membre,roles["MUTE"])
-        
-        # envoie le message sur le même channel
-        await bot.say(embed=msg)
-        
-    # sinon
-    else :
-        
-        # envoie le message sur le même channel
-        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
-        await bot.say(msg)
-        
-    # génération d'un log sur bot-logs
-    await log(ctx)
+            # envoie le message sur le même channel
+            await bot.say(embed=msg)
+            
+        # sinon
+        else :
+            
+            # envoie le message sur le même channel
+            msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+            await bot.say(msg)
+            
+        # génération d'un log sur bot-logs
+        await log(ctx)
     
     
 @bot.command(pass_context = True)
 async def demute(ctx ,*, message : str) :
     """ [JOUEUR] démute le joueur """
     
-    # initialisation     
-    msg = ""
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
     
-    # si c'est un membre du staff voulant le faire
-    if check_staff(ctx.message):
-    
-        # initialisation 
-        msg = demute_emb(ctx)
-        roles = {}
-        for r in ctx.message.server.roles :
-            roles[r.name] = r
-        membre = ctx.message.mentions[0]
+        # initialisation     
+        msg = ""
+        
+        # si c'est un membre du staff voulant le faire
+        if check_staff(ctx.message):
+        
+            # initialisation 
+            msg = demute_emb(ctx)
+            roles = {}
+            for r in ctx.message.server.roles :
+                roles[r.name] = r
+            membre = ctx.message.mentions[0]
+                
+            await bot.delete_message(ctx.message)
+            await bot.remove_roles(membre,roles["MUTE"])
             
-        await bot.delete_message(ctx.message)
-        await bot.remove_roles(membre,roles["MUTE"])
-        
-        # envoie le message sur le même channel
-        await bot.say(embed=msg)
-        
-    # sinon
-    else :
-        
-        # envoie le message sur le même channel
-        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
-        await bot.say(msg)
-        
-    # génération d'un log sur bot-logs
-    await log(ctx)
+            # envoie le message sur le même channel
+            await bot.say(embed=msg)
+            
+        # sinon
+        else :
+            
+            # envoie le message sur le même channel
+            msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+            await bot.say(msg)
+            
+        # génération d'un log sur bot-logs
+        await log(ctx)
 
 
 @bot.command(pass_context = True)
 async def roles(ctx ,*, message : str) :
-    """ [JOUEUR] [Planète] [citoyen/gouv/empereur] """
+    """ [JOUEUR] [citoyen/gouv/empereur] [Planète] """
     
-    # initialisation     
-    msg = ""
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
     
-    # si c'est un membre du staff voulant le faire
-    if check_staff(ctx.message):
-    
-        # initialisation 
-        membre = ctx.message.mentions[0]
-        planete = message.split(" ")[1]
-        statut = message.split(" ")[2] 
-        roles = {}
-        for r in ctx.message.server.roles :
-            roles[r.name] = r
+        # initialisation     
+        msg = ""
+        
+        # si c'est un membre du staff voulant le faire
+        if check_staff(ctx.message):
+        
+            # initialisation 
+            membre = ctx.message.mentions[0]
+            planete = message.split(" ")[2]
+            statut = message.split(" ")[1] 
+            membre_roles = get_roles(message,membre)
+            roles = {}
+            alliance = ""
+            for r in ctx.message.server.roles :
+                roles[r.name] = r
+                
+            # on regarde si le joueur a une alliance
+            for m_r in membre_roles :
+                if m_r.startswith("alliance") :
+                    alliance = m_r
             
-        # on attribut le pack de rôles correspondant
-        if statut == "citoyen" :
-            cle = "citoyen" + "-" + planete
-            await bot.add_roles(membre,roles[cle])
-        elif statut == "gouv" :
-            cle1 = "citoyen" + "-" + planete
-            cle2 = "gouv" + "-" + planete
-            await bot.add_roles(membre,roles[cle1], roles[cle2])
-        elif statut == "empereur" :
-            cle1 = "citoyen" + "-" + planete
-            cle2 = "gouv" + "-" + planete
-            cle3 = "empereur" + "-" + planete
-            await bot.add_roles(membre,roles[cle1], roles[cle2], roles[cle3])
+            # on attribut le pack de rôles correspondant
+            if statut == "citoyen" :
+                cle = "citoyen" + "-" + planete
+                if alliance != "" :
+                    await bot.replace_roles(membre,roles[cle],roles[alliance])
+                else :
+                    await bot.replace_roles(membre,roles[cle])
+                    
+            elif statut == "gouv" :
+                cle1 = "citoyen" + "-" + planete
+                cle2 = "gouv" + "-" + planete
+                if alliance != "" :
+                    await bot.replace_roles(membre,roles[cle1], roles[cle2], roles[alliance])
+                else :
+                    await bot.replace_roles(membre,roles[cle1], roles[cle2])  
+                
+            elif statut == "empereur" :
+                cle1 = "citoyen" + "-" + planete
+                cle2 = "gouv" + "-" + planete
+                cle3 = "empereur" + "-" + planete
+                if alliance != "" :
+                    await bot.replace_roles(membre,roles[cle1], roles[cle2], roles[cle3], roles[alliance])
+                else :
+                    await bot.replace_roles(membre,roles[cle1], roles[cle2], roles[cle3])
+            else :
+                await bot.say("Tu t'es encore fail Billy ! Recommences, ça ne coute rien ;)")
+                return
+                
+            await bot.delete_message(ctx.message)
+            
+            # envoie le message sur le même channel
+            msg = roles_emb(ctx,membre,planete,statut)
+            await bot.say(embed = msg)
+            
+        # sinon
         else :
-            await bot.say("Tu t'es encore fail Billy ! Recommences, ça ne coute rien ;)")
-            return
             
-        await bot.delete_message(ctx.message)
-        
-        # envoie le message sur le même channel
-        msg = roles_emb(ctx,membre,planete,statut)
-        await bot.say(embed = msg)
-        
-    # sinon
-    else :
-        
-        # envoie le message sur le même channel
-        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
-        await bot.say(msg)
-        
-    # génération d'un log sur bot-logs
-    await log(ctx)
-    
-  
-@bot.command(pass_context = True)
-async def reset(ctx ,*, message : str):
-    """ [JOUEUR] permet d'enlever les rôles du joueur avant un !roles ou !mute """
-    
-    # si c'est un membre du staff voulant le faire
-    if check_staff(ctx.message):
-    
-        # initialisation
-        membre = ctx.message.mentions[0] 
-        roles = {}
-        for r in ctx.message.server.roles :
-            roles[r.name] = r
-        
-        # on vire les rôles précédents
-        top_role = membre.top_role
-        if top_role.name.startswith("empereur"):
-            role_planete = top_role.name.split("-")[1]
-            cle1 = "empereur" + "-" + role_planete
-            cle2 = "gouv" + "-" + role_planete
-            cle3 = "citoyen" + "-" + role_planete
-            await bot.remove_roles(membre,roles[cle1], roles[cle2], roles[cle3])           
-        elif top_role.name.startswith("gouv"):
-            role_planete = top_role.name.split("-")[1]
-            cle1 = "gouv" + "-" + role_planete
-            cle2 = "citoyen" + "-" + role_planete
-            await bot.remove_roles(membre,roles[cle1], roles[cle2])
-        elif top_role.name.startswith("citoyen"):
-            role_planete = top_role.name.split("-")[1]
-            cle = "citoyen" + "-" + role_planete      
-            await bot.remove_roles(membre,roles[cle])
+            # envoie le message sur le même channel
+            msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+            await bot.say(msg)
             
-        await bot.delete_message(ctx.message)
-    else :
-
-        # envoie le message sur le même channel
-        msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
-        await bot.say(msg)
+        # génération d'un log sur bot-logs
+        await log(ctx)
     
         
 """
@@ -283,77 +274,89 @@ async def reset(ctx ,*, message : str):
 async def rand(ctx ,*, message : str):
     """ [NB_ESSAIS] [MIN] [MAX] renvoie le(s) nombre(s) aléatoire(s) demandé(s) """
     
-    # génération de log
-    await log(ctx) 
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
     
-    # initialisation
-    limite_essais = 100
-    limite_max = 1000
-    limite_min = -1000
-    nb_essais = int(message.split(" ")[0])
-    mini = int(message.split(" ")[1])
-    maxi = int(message.split(" ")[2])
-    liste_nb = []
-    
-    # on check les limites 
-    if maxi > limite_max :
-        maxi = limite_max
-    if mini < limite_min :
-        mini = limite_min
-    if nb_essais > limite_essais :
-        nb_essais = limite_essais
-    
-    # on fait les tirages
-    for i in range(nb_essais):
-        liste_nb.append(randint(mini,maxi))
-    liste_nb.sort()
-    
-    # affiche le résultat
-    await bot.say(embed = rand_emb(liste_nb,mini,maxi,nb_essais))
+        # génération de log
+        await log(ctx) 
+        
+        # initialisation
+        limite_essais = 100
+        limite_max = 1000
+        limite_min = -1000
+        nb_essais = int(message.split(" ")[0])
+        mini = int(message.split(" ")[1])
+        maxi = int(message.split(" ")[2])
+        liste_nb = []
+        
+        # on check les limites 
+        if maxi > limite_max :
+            maxi = limite_max
+        if mini < limite_min :
+            mini = limite_min
+        if nb_essais > limite_essais :
+            nb_essais = limite_essais
+        
+        # on fait les tirages
+        for i in range(nb_essais):
+            liste_nb.append(randint(mini,maxi))
+        liste_nb.sort()
+        
+        # affiche le résultat
+        await bot.say(embed = rand_emb(liste_nb,mini,maxi,nb_essais))
     
     
 @bot.command(pass_context = True)
 async def me(ctx ,*args) : 
     """ []  Affiche son profil discord sur le serveur """
     
-    # génération d'un log sur bot-logs
-    await log(ctx)
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
     
-    # envoie le message sur le même channel
-    await bot.say(embed=me_emb(ctx))
+        # génération d'un log sur bot-logs
+        await log(ctx)
+        
+        # envoie le message sur le même channel
+        await bot.say(embed=me_emb(ctx))
 
         
 @bot.command(pass_context = True)
 async def profil(ctx ,*, message : str):
     """ [JOUEURS] Affiche le profil SpaceOrigin des JOUEURS, séparer par ' ' """
 
-    # génération d'un log sur bot-logs
-    await log(ctx)
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
     
-    # texte du message d'attente
-    tmp_embed = discord.Embed(title="`Veuillez patienter...`", colour=BLUE, url="", description="")
-    tmp_embed.set_author(name="SO-INFO", url="", icon_url=URL_ANIM)
-    tmp_embed.set_image(url=URLS_WAIT[randint(0,1)])
-
-    # envoie la réponse et le message d'attente sur le même channel
-    my_message = await bot.send_message(ctx.message.channel,embed = tmp_embed)
-    
-    liste_emb = profil_emb(message)
-    for e in liste_emb :
-        await bot.say(embed=e)
+        # génération d'un log sur bot-logs
+        await log(ctx)
         
-    await bot.delete_message(my_message)
+        # texte du message d'attente
+        tmp_embed = discord.Embed(title="`Veuillez patienter...`", colour=BLUE, url="", description="")
+        tmp_embed.set_author(name="SO-INFO", url="", icon_url=URL_ANIM)
+        tmp_embed.set_image(url=URLS_WAIT[randint(0,1)])
+
+        # envoie la réponse et le message d'attente sur le même channel
+        my_message = await bot.send_message(ctx.message.channel,embed = tmp_embed)
+        
+        liste_emb = profil_emb(message)
+        for e in liste_emb :
+            await bot.say(embed=e)
+            
+        await bot.delete_message(my_message)
 
 
 @bot.command(pass_context = True)
 async def pub(ctx, *args):
     """ [] Fait apparaitre les liens utiles de SpaceOrigin. """
-
-    # génération d'un log sur bot-logs
-    await log(ctx)
     
-    # envoie le message sur le même channel
-    await bot.say(embed = pub_emb())
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
+    
+        # génération d'un log sur bot-logs
+        await log(ctx)
+        
+        # envoie le message sur le même channel
+        await bot.say(embed = pub_emb())
 
 
 """
@@ -438,7 +441,7 @@ def demute_emb(ctx):
     embed = discord.Embed(title="`Un MUTE se termine !`", colour=RED, url="", description="")
     
     # on récupère le membre et son nom
-    m = ctx.message.mentions[0]  
+    m = ctx.message.mentions[0]
     cible_val = m.name + "#" + m.discriminator 
     avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
 
