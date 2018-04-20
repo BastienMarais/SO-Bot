@@ -84,5 +84,9 @@ Elle prend en paramètre le nombre de tirages, le minimum et maximum.
 Permet d'afficher les liens utiles du jeu SpaceOrigin.  
 Elle ne prend pas de paramètre.
 
+### TODO :
+
+* Un jeu du pendu avec pour thématique SpaceOrigin
+* J'ai pas plus d'inspiration pour le moment ^^
 
 
