@@ -34,6 +34,7 @@ bot = Bot(command_prefix="!")
 URL_WAIT = "https://media.giphy.com/media/i9pILLyvafPkk/giphy.gif"
 URL_WAIT2 = "https://media.giphy.com/media/Ml1xQjpBncN4k/giphy.gif"
 URLS_WAIT = [URL_WAIT,URL_WAIT2]
+URL_RAND = "https://media.giphy.com/media/ldSHPxXrtL8Yw/giphy.gif"
 URL_DEMUTE = "https://media.giphy.com/media/LtlYX81u51Uys/giphy.gif"
 URL_MUTE = "https://78.media.tumblr.com/tumblr_lrh786mY3U1qlwcbao1_500.gif"
 URL_KING = "http://image.noelshack.com/fichiers/2018/15/7/1523794762-avatar-staf01.png"
@@ -286,17 +287,13 @@ async def rand(ctx ,*, message : str):
     await log(ctx) 
     
     # initialisation
-    limite_essais = 50
+    limite_essais = 100
     limite_max = 1000
     limite_min = -1000
     nb_essais = int(message.split(" ")[0])
     mini = int(message.split(" ")[1])
     maxi = int(message.split(" ")[2])
     liste_nb = []
-    unique = {}
-    texte = "**Résultat :** \n"
-    compteur = 0
-    liste_unique = []
     
     # on check les limites 
     if maxi > limite_max :
@@ -310,34 +307,9 @@ async def rand(ctx ,*, message : str):
     for i in range(nb_essais):
         liste_nb.append(randint(mini,maxi))
     liste_nb.sort()
-        
-    # on ajoute au texte les tirages
-    for nb in range(0,len(liste_nb)):
-        if liste_nb[nb] in unique.keys():
-            unique[liste_nb[nb]] += 1
-        else :
-            unique[liste_nb[nb]] = 1
-    
-    # affichage
-    for c in unique.keys():
-        liste_unique.append(int(c))
-        
-    liste_unique.sort()
-    
-    for cle in liste_unique:
-        if unique[cle] == 1 :
-            texte += "[" + str(cle) + "]"
-        else :
-            texte += "[" + str(cle) + "] * " + str(unique[cle])
-            
-        if compteur < len(liste_unique) - 1 :
-            texte += " , "
-        else :
-            texte += " . "
-        compteur += 1
     
     # affiche le résultat
-    await bot.say(texte)
+    await bot.say(embed = rand_emb(liste_nb,mini,maxi,nb_essais))
     
     
 @bot.command(pass_context = True)
@@ -390,6 +362,54 @@ async def pub(ctx, *args):
 #########################################################################################
 """
 
+
+def rand_emb(liste_nb,mini,maxi,nb_essais):
+
+    # initialisation
+    unique = {}
+    compteur = 0
+    liste_unique = []
+    texte = ""
+    if nb_essais > 1 :
+        tirage_str = " tirages entre "
+    else :
+        tirage_str = " tirage entre "        
+    texte2 = str(nb_essais) + tirage_str + str(mini) + " et " + str(maxi) + " ."
+    embed = discord.Embed(title="", colour=YELLOW, url="", description="")
+    
+    for nb in range(0,len(liste_nb)):
+        if liste_nb[nb] in unique.keys():
+            unique[liste_nb[nb]] += 1
+        else :
+            unique[liste_nb[nb]] = 1
+        
+    # on prépare la string du résultat
+    for c in unique.keys():
+        liste_unique.append(int(c))
+            
+    liste_unique.sort()
+        
+    for cle in liste_unique:
+        if unique[cle] == 1 :
+            texte += "[" + str(cle) + "]"
+        else :
+            texte += "[" + str(cle) + "] * " + str(unique[cle])
+                
+        if compteur < len(liste_unique) - 1 :
+            texte += " , "
+        else :
+            texte += " . "
+        compteur += 1
+            
+    # mise en forme 
+    embed.set_author(name="SO-PLAY", url="", icon_url=URL_ANIM)
+    embed.set_thumbnail(url=URL_RAND)
+    embed.add_field(name="Informations : ", value=texte2,inline=False)
+    embed.add_field(name="Résultat : ", value=texte,inline=False)
+    
+    # renvoie l'embed correspondant    
+    return embed
+            
 
 def roles_emb(ctx,membre,planete,statut):
     """ renvoie le embed de !roles """
