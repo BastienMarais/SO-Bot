@@ -69,7 +69,7 @@ Elle prend en paramètre le message.
 
 #### 6) La commande !trad
 
-Permet de tranformer un message originel, séparé lettre par lettre.
+Permet de tranformer un message originel, séparé lettre par lettre.  
 Prend en paramètre le message.
 
 ### Pour tout le monde : 
