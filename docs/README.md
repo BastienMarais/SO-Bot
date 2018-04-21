@@ -9,7 +9,7 @@ Pour utiliser ce bot vous avez besoin de :
 * python 3.5 ou plus
 * la librairie discord.py
 * les librairies bs4 et requests
-* les fichiers SO-bot.py, joueur.py et secrets.py
+* les fichiers SO-bot.py, joueur.py, originel.py et secrets.py
 
 Le fichier secrets.py doit être de ce genre :  
 ```python
@@ -20,7 +20,7 @@ ID_CHAN_LOG = "..."
 ID_CHAN_BOT = "..."
 ``` 
 
-Une fois les 3 fichiers dans le même répertoire faire :  
+Une fois les 4 fichiers dans le même répertoire faire :  
 ```sh
 python3.6 SO-bot.py
 ```
