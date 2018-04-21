@@ -24,6 +24,7 @@ from discord.ext.commands import Bot
 import time 
 from joueur import * 
 from random import *
+from originel import *
 
 # contient ID_BOT, ID_CHAN_BOT et ID_CHAN_LOG
 import secrets
@@ -117,8 +118,50 @@ async def say(ctx ,*, message : str) :
 
 
 @bot.command(pass_context = True)
+async def ori(ctx ,*, message : str) :
+    """ [MESSAGE] Ecrit votre message en mode originel, réservé au staff. """
+    
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
+    
+        # si c'est un membre du staff voulant le faire
+        if check_staff(ctx.message):
+            o = Originel()
+            msg = o.toOriginel(message)
+            
+        # sinon
+        else :
+            msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+
+        # génération d'un log sur bot-logs
+        await log(ctx)
+        await bot.say(msg)
+        
+
+@bot.command(pass_context = True)
+async def trad(ctx ,*, message : str) :
+    """ [MESSAGE] Traduit votre message originel, réservé au staff. """
+    
+    # si on est sur le channel bot ou du staff
+    if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
+    
+        # si c'est un membre du staff voulant le faire
+        if check_staff(ctx.message):
+            o = Originel()
+            msg = o.toNormal(message)
+            
+        # sinon
+        else :
+            msg = "Vous n'êtes pas autorisé à jouer avec cette commande"
+
+        # génération d'un log sur bot-logs
+        await log(ctx)
+        await bot.say(msg)
+
+
+@bot.command(pass_context = True)
 async def mute(ctx ,*, message : str) :
-    """ [JOUEUR] mute le joueur """
+    """ [JOUEUR] Mute le joueur """
     
     # si on est sur le channel bot ou du staff
     if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
@@ -155,7 +198,7 @@ async def mute(ctx ,*, message : str) :
     
 @bot.command(pass_context = True)
 async def demute(ctx ,*, message : str) :
-    """ [JOUEUR] démute le joueur """
+    """ [JOUEUR] Démute le joueur """
     
     # si on est sur le channel bot ou du staff
     if ctx.message.channel.id == secrets.ID_CHAN_BOT or check_staff(ctx.message):
