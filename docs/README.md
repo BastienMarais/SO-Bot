@@ -62,6 +62,16 @@ Elle prend en paramètre la mention du membre, son statut et sa planète.
 Statut : citoyen / gouv / empereur.  
 Planète : le nom d'une des 11 planètes en minuscule et sans accents.
 
+#### 5) La commande !ori
+
+Permet d'écrire le message donné en mode originel.  
+Elle prend en paramètre le message.
+
+#### 6) La commande !trad
+
+Permet de tranformer un message originel, séparé lettre par lettre.
+Prend en paramètre le message.
+
 ### Pour tout le monde : 
 
 #### 1) La commande !me
@@ -87,7 +97,6 @@ Elle ne prend pas de paramètre.
 ### TODO :
 
 * Un jeu du pendu avec pour thématique SpaceOrigin
-* Traducteur d'originel
 * J'ai pas plus d'inspiration pour le moment ^^
 
 
