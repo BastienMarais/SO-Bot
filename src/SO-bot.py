@@ -462,7 +462,10 @@ def roles_emb(ctx,membre,planete,statut):
     
     # initialisation
     embed = discord.Embed(title="Mise à jour des rôles", colour=GREEN, url="", description="")
-    avatar = "https://cdn.discordapp.com/avatars/" + membre.id + "/" + membre.avatar +".png"
+    if membre.avatar : 
+        avatar = "https://cdn.discordapp.com/avatars/" + membre.id + "/" + membre.avatar +".png"
+    else :
+        avatar = "https://cdn.discordapp.com/embed/avatars/" + str(int(membre.discriminator) % 5) + ".png"
     name = membre.name + "#" + membre.discriminator
     
     # mise en forme 
@@ -486,7 +489,10 @@ def demute_emb(ctx):
     # on récupère le membre et son nom
     m = ctx.message.mentions[0]
     cible_val = m.name + "#" + m.discriminator 
-    avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
+    if m.avatar : 
+        avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
+    else :
+        avatar = "https://cdn.discordapp.com/embed/avatars/" + str(int(m.discriminator) % 5) + ".png"
 
     # mise ne forme de l'embed
     embed.set_author(name="SO-Tribunal", url="", icon_url=URL_ADMIN)
@@ -508,7 +514,10 @@ def mute_emb(ctx):
     # on récupère le membre et son nom
     m = ctx.message.mentions[0]  
     cible_val = m.name + "#" + m.discriminator 
-    avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
+    if m.avatar : 
+        avatar = "https://cdn.discordapp.com/avatars/" + m.id + "/" + m.avatar +".png"
+    else :
+        avatar = "https://cdn.discordapp.com/embed/avatars/" + str(int(m.discriminator) % 5) + ".png"
 
     # mise ne forme de l'embed
     embed.set_author(name="SO-Tribunal", url="", icon_url=URL_ADMIN)
@@ -548,7 +557,10 @@ def me_emb(ctx):
     roles = []
     t = str(membre.joined_at.strftime("%d/%m/%y  %H:%M"))
     embed = discord.Embed(title="`Votre profil discord`", colour=BLUE, url="", description="")
-    avatar = "https://cdn.discordapp.com/avatars/" + membre.id + "/" + membre.avatar +".png"
+    if membre.avatar : 
+        avatar = "https://cdn.discordapp.com/avatars/" + membre.id + "/" + membre.avatar +".png"
+    else :
+        avatar = "https://cdn.discordapp.com/embed/avatars/" + str(int(membre.discriminator) % 5)  + ".png"
     
     # on transforme chacun des rôles en str
     roles = get_roles(message,membre)
