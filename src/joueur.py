@@ -50,6 +50,8 @@ class Joueur :
     def __init__(self,pseudo):
         """ constructeur """
         
+        pseudo = str(pseudo)
+        
         # initialisation
         pseudo = pseudo.lower()
         self.pseudo = ""
@@ -169,7 +171,8 @@ class Joueur :
             texte += "Planète : " + self.planete + "\n"
             
         texte += "Rang général : " + self.rang + "\n"
-        texte += "Rang planètaire : " + self.rang_planete + "\n"
+        if self.rang_planete :	
+            texte += "Rang planètaire : " + self.rang_planete + "\n"
         texte += "Level : " + self.level + "\n"
         texte += "Xp : " + self.xp + "\n"
         
@@ -179,7 +182,7 @@ class Joueur :
             
         texte += "Url : " + self.url + "\n"
         texte += "Avatar : " + self.avatar + "\n"
-        texte += "Fiche complète : " + self.complete + "\n"
+        texte += "Fiche complète : " + str(self.complete) + "\n"
         texte += "```"
     
         # renvoie la str correspondant au Joueur

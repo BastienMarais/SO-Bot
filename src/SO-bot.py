@@ -639,48 +639,55 @@ def profil_emb(message):
     for j in args :
         courant = Joueur(j)
         
-        # si on a un joueur de ce nom
-        if courant.pseudo != "" : 
-        
-            # si la fiche est complète
-            if courant.complete :
-                embed = discord.Embed(title="", colour=BLUE, url="", description="")
-                embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
-                embed.set_thumbnail(url=courant.avatar)
-                embed.add_field(name="Pseudo : ", value=courant.pseudo,inline=True)
-                embed.add_field(name="Race : ", value=courant.race,inline=True)
-                embed.add_field(name="Level : ", value=courant.level,inline=True)
-                embed.add_field(name="Xp : ", value=courant.xp,inline=True)
-                role_pla = courant.planete + " (" +  courant.role_planete + ")"
-                embed.add_field(name="Planète : ", value=role_pla,inline=False)
-                role_all = courant.alliance + " (" +  courant.role_alliance + ")"             
-                embed.add_field(name="Alliance : ", value=role_all,inline=False)
-                embed.add_field(name="Rang général : ", value=courant.rang,inline=True)        
-                embed.add_field(name="Rang planètaire : ", value=courant.rang_planete,inline=True) 
-                embed.add_field(name="Points : ", value=courant.points,inline=False)
-                embed.add_field(name="Url : ", value=courant.url, inline = False)
+        try : 
+            # si on a un joueur de ce nom
+            if courant.pseudo != "" : 
             
-            # si fiche incomplète
+                # si la fiche est complète
+                if courant.complete :
+                    embed = discord.Embed(title="", colour=BLUE, url="", description="")
+                    embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+                    embed.set_thumbnail(url=courant.avatar)
+                    embed.add_field(name="Pseudo : ", value=courant.pseudo,inline=True)
+                    embed.add_field(name="Race : ", value=courant.race,inline=True)
+                    embed.add_field(name="Level : ", value=courant.level,inline=True)
+                    embed.add_field(name="Xp : ", value=courant.xp,inline=True)
+                    role_pla = courant.planete + " (" +  courant.role_planete + ")"
+                    embed.add_field(name="Planète : ", value=role_pla,inline=False)
+                    role_all = courant.alliance + " (" +  courant.role_alliance + ")"             
+                    embed.add_field(name="Alliance : ", value=role_all,inline=False)
+                    embed.add_field(name="Rang général : ", value=courant.rang,inline=True)        
+                    embed.add_field(name="Rang planètaire : ", value=courant.rang_planete,inline=True) 
+                    embed.add_field(name="Points : ", value=courant.points,inline=False)
+                    embed.add_field(name="Url : ", value=courant.url, inline = False)
+                
+                # si fiche incomplète
+                else :
+                    embed = discord.Embed(title="", colour=BLUE, url="", description="")
+                    embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
+                    embed.set_thumbnail(url=courant.avatar)
+                    embed.add_field(name="Pseudo : ", value=courant.pseudo,inline=True)
+                    embed.add_field(name="Race : ", value=courant.race,inline=True)
+                    embed.add_field(name="Level : ", value=courant.level,inline=True)
+                    embed.add_field(name="Xp : ", value=courant.xp,inline=True)
+                    embed.add_field(name="Planète : ", value=courant.planete,inline=False)
+                    embed.add_field(name="Rang général : ", value=courant.rang,inline=True)        
+                    embed.add_field(name="Rang planètaire : ", value=courant.rang_planete,inline=True) 
+                    embed.add_field(name="Url : ", value=courant.url, inline = False)
+            
+            # le pseudo n'appartient a aucun joueur
             else :
-                embed = discord.Embed(title="", colour=BLUE, url="", description="")
+                embed = discord.Embed(title="", colour=RED, url="", description="")
                 embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
-                embed.set_thumbnail(url=courant.avatar)
-                embed.add_field(name="Pseudo : ", value=courant.pseudo,inline=True)
-                embed.add_field(name="Race : ", value=courant.race,inline=True)
-                embed.add_field(name="Level : ", value=courant.level,inline=True)
-                embed.add_field(name="Xp : ", value=courant.xp,inline=True)
-                embed.add_field(name="Planète : ", value=courant.planete,inline=False)
-                embed.add_field(name="Rang général : ", value=courant.rang,inline=True)        
-                embed.add_field(name="Rang planètaire : ", value=courant.rang_planete,inline=True) 
-                embed.add_field(name="Url : ", value=courant.url, inline = False)
+                error = "Le joueur " + j + " n'éxiste pas..."
+                embed.add_field(name="Error : ", value=error,inline=False)
         
-        # le pseudo n'appartient a aucun joueur
-        else :
+        except : 
             embed = discord.Embed(title="", colour=RED, url="", description="")
             embed.set_author(name="SO-INFO", url="", icon_url=URL_MOD_FORUM)
-            error = "Le joueur " + j + " n'éxiste pas..."
+            error = "Erreur lors du traitement de " + j + "..."
             embed.add_field(name="Error : ", value=error,inline=False)
-        
+            
         liste_emb.append(embed)
         
     # renvoie les embeds
